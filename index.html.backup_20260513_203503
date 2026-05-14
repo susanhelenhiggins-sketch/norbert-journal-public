@@ -623,10 +623,6 @@
       title.textContent = entry.title || "";
 
       // Divider
-      var byline = document.createElement("p");
-      byline.className = "entry-byline";
-      byline.textContent = "By Sue Higgins";
-
       var divider = document.createElement("hr");
       divider.className = "entry-divider";
 
@@ -654,7 +650,6 @@
 
       article.appendChild(meta);
       article.appendChild(title);
-      article.appendChild(byline);
       article.appendChild(divider);
       article.appendChild(bodyDiv);
       display.appendChild(article);
