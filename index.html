@@ -744,10 +744,15 @@
         article.appendChild(igWrap);
 
         // Ask Instagram embed processor to render the newly inserted blockquote.
-        // Guard against the script not yet having loaded.
-        if (window.instgrm && window.instgrm.Embeds) {
-          window.instgrm.Embeds.process();
-        }
+        // embed.js loads async so it may not be ready yet.
+        // Retry every 100ms for up to 3 seconds, then give up cleanly.
+        (function processEmbed(attempts) {
+          if (window.instgrm && window.instgrm.Embeds) {
+            window.instgrm.Embeds.process();
+          } else if (attempts > 0) {
+            setTimeout(function() { processEmbed(attempts - 1); }, 100);
+          }
+        })(30);
       }
 
       display.appendChild(article);
