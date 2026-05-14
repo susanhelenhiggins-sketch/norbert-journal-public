@@ -524,12 +524,15 @@
     }
 
     /* ============================================================
-       INSTAGRAM REEL EMBED
+       INSTAGRAM REEL BUTTON
     ============================================================ */
     .entry-instagram-wrap {
       margin-top: 2rem;
       padding-top: 1.75rem;
       border-top: 1px solid rgba(196, 163, 90, 0.15);
+      display: flex;
+      align-items: center;
+      gap: 1rem;
     }
 
     .entry-instagram-label {
@@ -537,18 +540,38 @@
       font-size: 0.72rem;
       letter-spacing: 0.1em;
       text-transform: uppercase;
-      color: var(--gold);
-      margin-bottom: 1rem;
+      color: var(--sage);
+      white-space: nowrap;
     }
 
-    .entry-instagram-embed {
-      display: flex;
-      justify-content: center;
+    .entry-instagram-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      background: transparent;
+      border: 1px solid var(--gold-soft);
+      color: var(--forest-deep);
+      font-family: var(--font-body);
+      font-size: 0.88rem;
+      font-weight: 600;
+      letter-spacing: 0.02em;
+      padding: 0.6rem 1.25rem;
+      border-radius: 24px;
+      cursor: pointer;
+      text-decoration: none;
+      transition: background 0.2s, border-color 0.2s, color 0.2s;
     }
 
-    /* Instagram blockquote resets -- prevent site styles from bleeding in */
-    .entry-instagram-embed .instagram-media {
-      margin: 0 auto !important;
+    .entry-instagram-btn:hover {
+      background: rgba(196, 163, 90, 0.08);
+      border-color: var(--gold);
+      color: var(--forest-deep);
+    }
+
+    .entry-instagram-btn svg {
+      width: 16px;
+      height: 16px;
+      flex-shrink: 0;
     }
   </style>
 </head>
@@ -718,41 +741,28 @@
 
       article.appendChild(bodyDiv);
 
-      // Instagram Reel embed -- shown below body text when instagram_url is present.
-      // blockquote attributes set via setAttribute -- no innerHTML for API content.
+      // Instagram Reel button -- shown below body text when instagram_url is present.
+      // Opens the Reel in a new tab. No embed script dependency.
       // Entries without instagram_url are completely unaffected.
       if (entry.instagram_url) {
         var igWrap = document.createElement("div");
         igWrap.className = "entry-instagram-wrap";
 
-        var igLabel = document.createElement("p");
+        var igLabel = document.createElement("span");
         igLabel.className = "entry-instagram-label";
-        igLabel.textContent = "Watch on Instagram";
+        igLabel.textContent = "See it on Instagram";
 
-        var igEmbed = document.createElement("div");
-        igEmbed.className = "entry-instagram-embed";
+        // Instagram SVG icon (camera outline) -- hardcoded, not from API
+        var igBtn = document.createElement("a");
+        igBtn.className = "entry-instagram-btn";
+        igBtn.href = entry.instagram_url;
+        igBtn.target = "_blank";
+        igBtn.rel = "noopener noreferrer";
+        igBtn.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="0.75" fill="currentColor" stroke="none"/></svg> Watch the Reel';
 
-        var blockquote = document.createElement("blockquote");
-        blockquote.className = "instagram-media";
-        blockquote.setAttribute("data-instgrm-captioned", "");
-        blockquote.setAttribute("data-instgrm-permalink", entry.instagram_url);
-        blockquote.setAttribute("data-instgrm-version", "14");
-
-        igEmbed.appendChild(blockquote);
         igWrap.appendChild(igLabel);
-        igWrap.appendChild(igEmbed);
+        igWrap.appendChild(igBtn);
         article.appendChild(igWrap);
-
-        // Ask Instagram embed processor to render the newly inserted blockquote.
-        // embed.js loads async so it may not be ready yet.
-        // Retry every 100ms for up to 3 seconds, then give up cleanly.
-        (function processEmbed(attempts) {
-          if (window.instgrm && window.instgrm.Embeds) {
-            window.instgrm.Embeds.process();
-          } else if (attempts > 0) {
-            setTimeout(function() { processEmbed(attempts - 1); }, 100);
-          }
-        })(30);
       }
 
       display.appendChild(article);
@@ -886,7 +896,5 @@
     });
   </script>
 
-  <!-- Instagram embed script -- loaded once for Reel embeds -->
-  <script async src="https://www.instagram.com/embed.js"></script>
 </body>
 </html>
