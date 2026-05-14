@@ -523,6 +523,16 @@
       border-radius: 12px;
     }
 
+    .entry-photo-caption {
+      font-family: var(--font-display);
+      font-style: italic;
+      font-size: 0.92rem;
+      color: var(--sage);
+      text-align: center;
+      margin-top: 0.6rem;
+      line-height: 1.5;
+    }
+
     /* ============================================================
        INSTAGRAM REEL BUTTON
     ============================================================ */
@@ -736,6 +746,13 @@
         photo.className = "entry-photo";
         photo.loading = "lazy";
         photoWrap.appendChild(photo);
+        // Caption -- shown below photo when present
+        if (entry.photo_caption) {
+          var caption = document.createElement("p");
+          caption.className = "entry-photo-caption";
+          caption.textContent = entry.photo_caption;
+          photoWrap.appendChild(caption);
+        }
         article.appendChild(photoWrap);
       }
 
