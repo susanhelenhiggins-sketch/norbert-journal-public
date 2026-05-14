@@ -522,6 +522,34 @@
       object-fit: cover;
       border-radius: 12px;
     }
+
+    /* ============================================================
+       INSTAGRAM REEL EMBED
+    ============================================================ */
+    .entry-instagram-wrap {
+      margin-top: 2rem;
+      padding-top: 1.75rem;
+      border-top: 1px solid rgba(196, 163, 90, 0.15);
+    }
+
+    .entry-instagram-label {
+      font-family: var(--font-body);
+      font-size: 0.72rem;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--gold);
+      margin-bottom: 1rem;
+    }
+
+    .entry-instagram-embed {
+      display: flex;
+      justify-content: center;
+    }
+
+    /* Instagram blockquote resets -- prevent site styles from bleeding in */
+    .entry-instagram-embed .instagram-media {
+      margin: 0 auto !important;
+    }
   </style>
 </head>
 <body>
@@ -689,6 +717,39 @@
       }
 
       article.appendChild(bodyDiv);
+
+      // Instagram Reel embed -- shown below body text when instagram_url is present.
+      // blockquote attributes set via setAttribute -- no innerHTML for API content.
+      // Entries without instagram_url are completely unaffected.
+      if (entry.instagram_url) {
+        var igWrap = document.createElement("div");
+        igWrap.className = "entry-instagram-wrap";
+
+        var igLabel = document.createElement("p");
+        igLabel.className = "entry-instagram-label";
+        igLabel.textContent = "Watch on Instagram";
+
+        var igEmbed = document.createElement("div");
+        igEmbed.className = "entry-instagram-embed";
+
+        var blockquote = document.createElement("blockquote");
+        blockquote.className = "instagram-media";
+        blockquote.setAttribute("data-instgrm-captioned", "");
+        blockquote.setAttribute("data-instgrm-permalink", entry.instagram_url);
+        blockquote.setAttribute("data-instgrm-version", "14");
+
+        igEmbed.appendChild(blockquote);
+        igWrap.appendChild(igLabel);
+        igWrap.appendChild(igEmbed);
+        article.appendChild(igWrap);
+
+        // Ask Instagram embed processor to render the newly inserted blockquote.
+        // Guard against the script not yet having loaded.
+        if (window.instgrm && window.instgrm.Embeds) {
+          window.instgrm.Embeds.process();
+        }
+      }
+
       display.appendChild(article);
 
       // Update active state on sidebar buttons
@@ -820,5 +881,7 @@
     });
   </script>
 
+  <!-- Instagram embed script -- loaded once for Reel embeds -->
+  <script async src="https://www.instagram.com/embed.js"></script>
 </body>
 </html>
