@@ -506,6 +506,22 @@
         font-size: 2rem;
       }
     }
+    /* ============================================================
+       ENTRY PHOTO (Phase J3)
+    ============================================================ */
+    .entry-photo-wrap {
+      margin-bottom: 1.75rem;
+      border-radius: 12px;
+      overflow: hidden;
+    }
+
+    .entry-photo {
+      display: block;
+      width: 100%;
+      max-height: 480px;
+      object-fit: cover;
+      border-radius: 12px;
+    }
   </style>
 </head>
 <body>
@@ -656,6 +672,22 @@
       article.appendChild(title);
       article.appendChild(byline);
       article.appendChild(divider);
+
+      // Photo -- inline display when photo_url is present (Phase J3).
+      // Uses img.src directly -- no innerHTML -- same safe pattern as rest of file.
+      // Entries without a photo are completely unaffected.
+      if (entry.photo_url) {
+        var photoWrap = document.createElement("div");
+        photoWrap.className = "entry-photo-wrap";
+        var photo = document.createElement("img");
+        photo.src = entry.photo_url;
+        photo.alt = entry.title ? "Photo from: " + entry.title : "Journal photo";
+        photo.className = "entry-photo";
+        photo.loading = "lazy";
+        photoWrap.appendChild(photo);
+        article.appendChild(photoWrap);
+      }
+
       article.appendChild(bodyDiv);
       display.appendChild(article);
 
